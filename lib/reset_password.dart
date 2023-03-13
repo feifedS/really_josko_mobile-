@@ -50,7 +50,7 @@ class _ResetPageState extends State<ResetPage> {
               child: TextButton(
                 onPressed: () {
                   Navigator.push(
-                      context, MaterialPageRoute(builder: (_) => HomePage(name: '', sessionId: '',)));
+                      context, MaterialPageRoute(builder: (_) => HomePage()));
                 },
                 child: const Text(
                   'Сбросить',

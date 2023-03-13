@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_session/flutter_session.dart';
 import 'package:http/http.dart' as http;
 import 'package:last/controllers/home_controller.dart';
 import 'package:last/models/api_models.dart';
 import 'package:last/register.dart';
 import 'package:last/reset_password.dart';
+import 'package:last/services/storage_service.dart';
 import 'HomePage.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 // import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:last/api_connection/api_connection.dart';
 import 'package:last/repository/user_repository.dart';
 
-void main() {
-  runApp(MyApp());
-}
+import 'models/storage_item.dart';
 
 class UserData {
   String username;
@@ -37,15 +35,33 @@ class Token {
   }
 }
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: LoginDemo(),
-    );
-  }
-}
+// class MyApp extends StatelessWidget {
+//   final StorageService _storageService = StorageService();
+//   String? _userID = "";
+//   Widget widgetName = HomePage();
+
+//   Future<String?> getUserID() async {
+//     _userID = await _storageService.readSecureData("userID");
+//     // print("TTTTTTTTTTTT: ${_userID.first.key}: ${_userID.first.value}");
+//     return _userID;
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     getUserID().then((String? userID) {
+//       _userID = userID;
+//     });
+
+//     if (_userID == null) {
+//       widgetName = LoginDemo();
+//     }
+
+//     return MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       home: widgetName,
+//     );
+//   }
+// }
 
 class LoginDemo extends StatefulWidget {
   @override
@@ -58,6 +74,7 @@ class LoginDemo extends StatefulWidget {
 class _LoginDemoState extends State<LoginDemo> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  final StorageService _storageService = StorageService();
 
   @override
   void dispose() {
@@ -90,19 +107,6 @@ class _LoginDemoState extends State<LoginDemo> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            // #1 asset for my pics
-            // Padding(
-            //   padding: const EdgeInsets.only(top: 60.0),
-            //   child: Center(
-            //     child: Container(
-            //         width: 200,
-            //         height: 150,
-            //         /*decoration: BoxDecoration(
-            //             color: Colors.red,
-            //             borderRadius: BorderRadius.circular(50.0)),*/
-            //         child: Image.asset('../asset/images/flutter-logo.png')),
-            //   ),
-            // ),
             Container(
               //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
               padding: EdgeInsets.symmetric(horizontal: 15),
@@ -139,10 +143,6 @@ class _LoginDemoState extends State<LoginDemo> {
             ),
             TextButton(
               onPressed: () {
-                UserRepository userRepository = UserRepository();
-                userRepository.signInWithCredentials(
-                    username: usernameController.text,
-                    password: passwordController.text);
                 Navigator.push(
                     context, MaterialPageRoute(builder: (_) => ResetPage()));
               },
@@ -163,11 +163,15 @@ class _LoginDemoState extends State<LoginDemo> {
                   String userCreds = await widget._homeController
                       .loginUser(username, password);
 
-                  String asd = await FlutterSession().get('token');
-                  int qwe = await FlutterSession().get('userID');
+                  final StorageItem? userIDItem =
+                      StorageItem("userID", userCreds);
 
-                  print("UUUUUUDAAAAAAAA:      ${asd}");
-                  print("UUUUUUDAAAAAAAA:      ${qwe}");
+                  if (userIDItem != null) {
+                    _storageService.writeSecureData(userIDItem);
+                  }
+
+                  var asd = await _storageService.readAllSecureData();
+                  print("FFFFFF: ${asd.first.key}: ${asd.first.value}");
 
                   // UserLogin userLogin =
                   //     UserLogin(username: username, password: password);
@@ -190,14 +194,8 @@ class _LoginDemoState extends State<LoginDemo> {
 
                   // if (response.statusCode == 200) {
                   // } else {}
-                  int vv = await FlutterSession().get('userID');
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => HomePage(
-                                name: vv.toString(), //usernameController.text
-                                sessionId: '',
-                              )));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => HomePage()));
                 },
                 child: Text(
                   'Вход',

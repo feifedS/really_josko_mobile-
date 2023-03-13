@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 // import 'package:flutter_session/flutter_session.dart';
-import 'package:flutter_session/flutter_session.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:meta/meta.dart';
 import 'package:http/http.dart' as http;
@@ -130,16 +129,10 @@ class UserRepository implements IUserRepository {
     UserLogin userLogin = UserLogin(username: username, password: password);
     int userID = await loginApi(userLogin);
     print("USERIIIIIIIIIIIIIID: ${userID}");
-    if (userID != 0) {
-      var session = FlutterSession();
-      session.set('token', username);
-      session.set('userID', userID);
-    }
+    if (userID != 0) {}
 
     return userID.toString();
   }
-
-
 
   @override
   Future<void> update(User user) {
