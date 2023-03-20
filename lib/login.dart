@@ -104,6 +104,7 @@ class _LoginDemoState extends State<LoginDemo> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("Авторизация"),
+        automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -199,7 +200,13 @@ class _LoginDemoState extends State<LoginDemo> {
                   //   Navigator.push(context,
                   //       MaterialPageRoute(builder: (context) => HomePage()));
                   // },
-                  context.go('/');
+                  {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => HomePage(userID: asd.first.value)));
+                  }
+                  ;
                 },
                 child: Text(
                   'Вход',

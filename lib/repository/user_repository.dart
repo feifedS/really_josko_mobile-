@@ -113,11 +113,32 @@ class UserRepository implements IUserRepository {
   }
 
   @override
-  Future<bool> register(String email, String username, String password) async {
+  Future<bool> register(
+      String username,
+      String firstname,
+      String lastname,
+      String email,
+      String password1,
+      String password2,
+      String age,
+      String genderId,
+      String phoneNumber) async {
     // TODO: implement insert
-    UserRegister userRegister =
-        UserRegister(email: email, username: username, password: password);
-    Future<bool> success = registerApi(userRegister);
+    User userRegisterModel = User.registration(username, email, password1,
+        password2, firstname, lastname, age, genderId, phoneNumber);
+
+    print("""YA V REPOSITORII
+      $username,
+      $firstname,
+      $lastname,
+      $email,
+      $password1,
+      $password2,
+      $age,
+      $genderId,
+      $phoneNumber,
+    """);
+    Future<bool> success = registerApi(userRegisterModel);
 
     return success;
   }

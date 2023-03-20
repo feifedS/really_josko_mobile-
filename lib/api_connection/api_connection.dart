@@ -3,12 +3,13 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:last/dao/dao.dart';
 import 'package:last/models/api_models.dart';
+import 'package:last/models/user_model.dart';
 
 // final _base = "http://192.168.0.8:8000";
-final _base = "http://192.168.254.88:8000";
+final _base = "http://192.168.192.205:8000";
 final _signInURL = "/main/token/";
-final _signUpEndpoint = "/main/register/";
-final _sessionEndpoint = "main/token/refresh/";
+final _signUpEndpoint = "/main/api/registration";
+final _sessionEndpoint = "/main/token/refresh/";
 // final _graphParamEndpoint = "/api/get_states/";
 final _tokenURL = _base + _signInURL;
 final _signUpURL = _base + _signUpEndpoint;
@@ -33,14 +34,14 @@ Future<Token> getToken(UserLogin userLogin) async {
   }
 }
 
-Future<bool> registerApi(UserRegister userRegister) async {
+Future<bool> registerApi(User userRegisterModel) async {
   Future<bool> success = Future.value(false);
   final http.Response response = await http.post(
     Uri.parse(_signUpURL),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
-    body: jsonEncode(userRegister.toDatabaseJson()),
+    body: jsonEncode(userRegisterModel.toRegisterJson()),
   );
   if (response.statusCode == 200) {
     success = Future.value(true);

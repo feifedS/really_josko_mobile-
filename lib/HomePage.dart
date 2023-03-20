@@ -55,10 +55,12 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 7, 28, 255),
         title: const Text('BarberShop'),
+        automaticallyImplyLeading: false,
         actions: <Widget>[
           TextButton(
               onPressed: () {
-                context.pushReplacement('/login');
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (_) => LoginDemo()));
                 _storageService.deleteAllSecureData();
 
                 // Navigator.of(context).push(

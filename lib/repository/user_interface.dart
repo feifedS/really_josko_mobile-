@@ -6,7 +6,16 @@ abstract class IUserRepository {
 
   Future<User?> getOne(int id);
 
-  Future<bool> register(String email, String username, String password);
+  Future<bool> register(
+      String username,
+      String firstname,
+      String lastname,
+      String email,
+      String password1,
+      String password2,
+      String age,
+      String genderId,
+      String phoneNumber);
 
   Future<String> login(String username, String password);
 

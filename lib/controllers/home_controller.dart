@@ -10,8 +10,18 @@ class HomeController {
   // }
 
   Future<bool> registerUser(
-      String email, String username, String password) async {
-    return await _userRepo.register(email, username, password);
+      String username,
+      String firstname,
+      String lastname,
+      String email,
+      String password1,
+      String password2,
+      String age,
+      String genderId,
+      String phoneNumber) async {
+    print("YA V CONTROLLERE");
+    return await _userRepo.register(username, firstname, lastname, email,
+        password1, password2, age, genderId, phoneNumber);
   }
 
   Future<String> loginUser(String username, String password) async {
@@ -21,6 +31,4 @@ class HomeController {
   Future<void> removeBook(int id) {
     return _userRepo.delete(id);
   }
-
-
 }

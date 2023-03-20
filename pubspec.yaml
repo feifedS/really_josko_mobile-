@@ -49,6 +49,7 @@ dependencies:
   flutter_secure_storage: ^5.0.2
   go_router: ^6.2.0
   flutter_native_splash: ^2.2.19
+  syncfusion_flutter_datepicker: ^20.4.54
 
 
 dev_dependencies:
