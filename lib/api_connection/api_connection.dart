@@ -5,7 +5,7 @@ import 'package:last/dao/dao.dart';
 import 'package:last/models/api_models.dart';
 
 // final _base = "http://192.168.0.8:8000";
-final _base = "http://192.168.192.205:8000";
+final _base = "http://192.168.254.88:8000";
 final _signInURL = "/main/token/";
 final _signUpEndpoint = "/main/register/";
 final _sessionEndpoint = "main/token/refresh/";

@@ -1,4 +1,7 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:last/profile_page.dart';
 import 'package:last/services/storage_service.dart';
 // import 'package:flutter_session/flutter_session.dart';
@@ -13,6 +16,7 @@ import 'package:charts_flutter/flutter.dart' as charts;
 // import 'package:covid_communiquer/repository/chat_repository.dart';
 
 class HomePage extends StatefulWidget {
+  HomePage({required String userID});
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -38,7 +42,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   int currentPage = 0;
-  List<Widget> pages = [HomePage(), ProfilePage()];
+  List<Widget> pages = [
+    HomePage(
+      userID: "",
+    ),
+    ProfilePage()
+  ];
   @override
   @override
   Widget build(BuildContext context) {
@@ -49,13 +58,16 @@ class _HomePageState extends State<HomePage> {
         actions: <Widget>[
           TextButton(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (BuildContext context) {
-                      return LoginDemo();
-                    },
-                  ),
-                );
+                context.pushReplacement('/login');
+                _storageService.deleteAllSecureData();
+
+                // Navigator.of(context).push(
+                //   MaterialPageRoute(
+                //     builder: (BuildContext context) {
+                //       return LoginDemo();
+                //     },
+                //   ),
+                // );
                 // BlocProvider.of<AuthenticationBloc>(context).add(LoggedOut());
               },
               child: const Text('Выйти'))

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:last/controllers/home_controller.dart';
 import 'package:last/models/api_models.dart';
@@ -194,8 +195,11 @@ class _LoginDemoState extends State<LoginDemo> {
 
                   // if (response.statusCode == 200) {
                   // } else {}
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => HomePage()));
+
+                  //   Navigator.push(context,
+                  //       MaterialPageRoute(builder: (context) => HomePage()));
+                  // },
+                  context.go('/');
                 },
                 child: Text(
                   'Вход',
