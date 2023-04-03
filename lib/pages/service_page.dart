@@ -31,42 +31,43 @@ class _ServiceState extends State<ServicePage> {
   final StorageService _storageService = StorageService();
   String selectedDate = "";
 
-  String dropdownvalue = 'Выберите категорию';
-  List<String> itemsCategories = ["Выберите категорию"];
+  String? dropdownvalue;
+  List<String> itemsCategories = [];
   List<String> itemsTypeOfServices = [];
-  List<Category> categories = [];
+  late List<Category> categories = [];
   List<TypeOfService> typeofservices = [];
   @override
   void initState() {
     super.initState();
     loadCategories();
-    loadTypeOfServices();
+    // loadTypeOfServices();
   }
 
+//kk
   Future<void> loadCategories() async {
     List<Category> result = await widget._requestController.getCategory(
       '',
     );
     setState(() {
       categories = result;
-      print("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW $categories");
-      itemsCategories.clear();
-      itemsCategories.addAll(categories.map((category) => category.name));
-      dropdownvalue = itemsCategories.first;
+      print("QQQQQQQQQQQQQQQQQQQQQQ ${categories.first.name}");
+      // itemsCategories.clear();
+      // itemsCategories.addAll(categories.map((category) => category.name));
+      // dropdownvalue = itemsCategories.first;
     });
   }
 
-  Future<void> loadTypeOfServices() async {
-    List<TypeOfService> result =
-        await widget._requestController.getTypeOfService("");
-    setState(() {
-      typeofservices = result;
-      itemsTypeOfServices.clear();
-      itemsTypeOfServices
-          .addAll(typeofservices.map((typeofservice) => typeofservice.name));
-      dropdownvalue = itemsTypeOfServices.first;
-    });
-  }
+  // Future<void> loadTypeOfServices() async {
+  //   List<TypeOfService> result =
+  //       await widget._requestController.getTypeOfService("");
+  //   setState(() {
+  //     typeofservices = result;
+  //     itemsTypeOfServices.clear();
+  //     itemsTypeOfServices
+  //         .addAll(typeofservices.map((typeofservice) => typeofservice.name));
+  //     // dropdownvalue = itemsTypeOfServices.first;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -79,54 +80,93 @@ class _ServiceState extends State<ServicePage> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            // Container(
+            //   padding: EdgeInsets.symmetric(horizontal: 15),
+            //   margin: const EdgeInsets.only(top: 15.0),
+            //   child: DropdownButton<String>(
+            //     value: dropdownvalue,
+            //     elevation: 16,
+            //     hint: Container(child: Text("Выберите категорию")),
+            //     style: const TextStyle(color: Colors.deepPurple),
+            //     underline: Container(
+            //       height: 2,
+            //       color: Colors.deepPurpleAccent,
+            //     ),
+            //     items: categories.map((Category category) {
+            //       return DropdownMenuItem<String>(
+            //         value: category.name,
+            //         child: Text(category.name),
+            //       );
+            //     }).toList(),
+            //     onChanged: (String? newValue) {
+            //       setState(() {
+            //         dropdownvalue = newValue ?? "";
+            //       });
+            //     },
+            //   ),
+            // ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              margin: const EdgeInsets.only(top: 15.0),
-              child: DropdownButton(
-                value: dropdownvalue,
-                elevation: 16,
-                style: const TextStyle(color: Colors.deepPurple),
-                underline: Container(
-                  height: 2,
-                  color: Colors.deepPurpleAccent,
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: DropdownButton<String>(
+                  value: dropdownvalue,
+                  isExpanded: true,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.black,
+                  ),
+                  icon: Icon(Icons.arrow_drop_down),
+                  underline: Container(
+                    height: 2,
+                    color: Colors.blue,
+                  ),
+                  iconSize: 24,
+                  hint: Container(
+                    child: Text("Выберите материал"),
+                  ),
+                  items: categories.map((layerMaterial) {
+                    return DropdownMenuItem<String>(
+                      value: layerMaterial.name,
+                      child: Text(
+                        layerMaterial.name,
+                        style: TextStyle(fontSize: 15),
+                      ),
+                    );
+                  }).toList(),
+                  // Step 5.
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      dropdownvalue = newValue ?? "";
+                    });
+                  },
                 ),
-                items: itemsCategories.map((String item) {
-                  return DropdownMenuItem(
-                    value: item,
-                    child: Text(item),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    dropdownvalue = newValue!;
-                  });
-                },
               ),
             ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              margin: const EdgeInsets.only(top: 15.0),
-              child: DropdownButton(
-                value: dropdownvalue,
-                elevation: 16,
-                style: const TextStyle(color: Colors.deepPurple),
-                underline: Container(
-                  height: 2,
-                  color: Colors.deepPurpleAccent,
-                ),
-                items: itemsTypeOfServices.map((String item) {
-                  return DropdownMenuItem(
-                    value: item,
-                    child: Text(item),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    dropdownvalue = newValue!;
-                  });
-                },
-              ),
-            ),
+
+            // Container(
+            //   padding: EdgeInsets.symmetric(horizontal: 15),
+            //   margin: const EdgeInsets.only(top: 15.0),
+            //   child: DropdownButton(
+            //     value: dropdownvalue,
+            //     elevation: 16,
+            //     style: const TextStyle(color: Colors.deepPurple),
+            //     underline: Container(
+            //       height: 2,
+            //       color: Colors.deepPurpleAccent,
+            //     ),
+            //     items: itemsTypeOfServices.map((String item) {
+            //       return DropdownMenuItem(
+            //         value: item,
+            //         child: Text(item),
+            //       );
+            //     }).toList(),
+            //     onChanged: (String? newValue) {
+            //       setState(() {
+            //         dropdownvalue = newValue!;
+            //       });
+            //     },
+            //   ),
+            // ),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 15),
               margin: const EdgeInsets.only(top: 15.0),

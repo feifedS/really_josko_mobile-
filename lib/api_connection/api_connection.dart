@@ -110,6 +110,58 @@ Future<int> loginApi(UserLogin userLogin) async {
 //   //     "RESDPONSEEEEEEEEEEEEEEEEEEEEEEEEL   ${utf8.decode(response.bodyBytes)}");
 // }
 
+// Future<Token> refreshToken(Token token) async {
+//   final http.Response response = await http.post(
+//     Uri.parse(_refreshTokenURL),
+//     headers: <String, String>{
+//       'Content-Type': 'application/json; charset=UTF-8',
+//       'Accept': 'application/json',
+//     },
+//     body: jsonEncode({'refresh': token.refreshToken}),
+//   );
+
+//   if (response.statusCode == 200) {
+//     var tokenJson = json.decode(response.body);
+//     token.token = tokenJson['access'];
+//     StorageService().writeSecureData(StorageItem("token", token.token));
+//   } else {
+//     throw Exception(json.decode(response.body));
+//   }
+
+//   return token;
+// }
+
+// Future<List<Category>> getCategories(Token token) async {
+//   final http.Response response = await http.get(
+//     Uri.parse(_categoryURL),
+//     headers: <String, String>{
+//       'Content-Type': 'application/json; charset=UTF-8',
+//       'Accept': 'application/json',
+//       'Authorization': 'Bearer ${token.token}',
+//     },
+//   );
+
+//   // if (response.statusCode != 200) {
+//   //   throw Exception('Failed to get categories');
+//   // }
+//   List<Category> categories = [];
+//   if (response.statusCode == 200) {
+//     print(
+//         "RESDPONSEEEEEEEEEEEEEEEEEEEEEEEEL   ${utf8.decode(response.bodyBytes)}");
+//     List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
+
+//     List<Category> categories =
+//         data.map((item) => Category.fromJson(item)).toList();
+//     categories.forEach((category) {
+//       print("Category ID: ${category.id}");
+//       print("Category Name: ${category.name}");
+//     });
+//   } else if (response.statusCode == 401) {
+//     var newToken = await refreshToken(token);
+//     getTypeOfServices(newToken);
+//   }
+//   return categories;
+// }
 Future<Token> refreshToken(Token token) async {
   final http.Response response = await http.post(
     Uri.parse(_refreshTokenURL),
@@ -123,7 +175,7 @@ Future<Token> refreshToken(Token token) async {
   if (response.statusCode == 200) {
     var tokenJson = json.decode(response.body);
     token.token = tokenJson['access'];
-    StorageService().writeSecureData(StorageItem("token", token.token));
+    await StorageService().writeSecureData(StorageItem("token", token.token));
   } else {
     throw Exception(json.decode(response.body));
   }
@@ -141,24 +193,18 @@ Future<List<Category>> getCategories(Token token) async {
     },
   );
 
-  // if (response.statusCode != 200) {
-  //   throw Exception('Failed to get categories');
-  // }
   List<Category> categories = [];
   if (response.statusCode == 200) {
-    print(
-        "RESDPONSEEEEEEEEEEEEEEEEEEEEEEEEL   ${utf8.decode(response.bodyBytes)}");
+    print("RESPONSE: ${utf8.decode(response.bodyBytes)}");
     List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
 
-    List<Category> categories =
-        data.map((item) => Category.fromJson(item)).toList();
-    categories.forEach((category) {
-      print("Category ID: ${category.id}");
-      print("Category Name: ${category.name}");
-    });
+    categories = data.map((item) => Category.fromJson(item)).toList();
+    print("FFFFFFFFFFAAAAAAAAAAA:       ${categories}");
   } else if (response.statusCode == 401) {
     var newToken = await refreshToken(token);
-    getTypeOfServices(newToken);
+    categories = await getCategories(newToken);
+  } else {
+    throw Exception('Failed to get categories');
   }
   return categories;
 }
