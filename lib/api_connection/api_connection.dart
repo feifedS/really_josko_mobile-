@@ -1,19 +1,29 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:last/dao/dao.dart';
 import 'package:last/models/api_models.dart';
+import 'package:last/models/category_model.dart';
+import 'package:last/models/service_model.dart';
+import 'package:last/models/storage_item.dart';
 import 'package:last/models/user_model.dart';
+import 'package:last/services/storage_service.dart';
 
 // final _base = "http://192.168.0.8:8000";
-final _base = "http://192.168.192.205:8000";
+final _base = "http://192.168.51.88:8000";
 final _signInURL = "/main/token/";
+final _refreshURL = "/main/token/refresh/";
 final _signUpEndpoint = "/main/api/registration";
-final _sessionEndpoint = "/main/token/refresh/";
+const _categoryEndpoint = "/main/api/category";
+final _typeofserviceEndpoint = "/main/api/typeofservices";
 // final _graphParamEndpoint = "/api/get_states/";
 final _tokenURL = _base + _signInURL;
+final _refreshTokenURL = _base + _refreshURL;
 final _signUpURL = _base + _signUpEndpoint;
-final _createSessionURL = _base + _sessionEndpoint;
+// final _createSessionURL = _base + _sessionEndpoint;
+final _categoryURL = _base + _categoryEndpoint;
+final _typeofserviceURL = _base + _typeofserviceEndpoint;
 // final _graphParamURL = _base + _graphParamEndpoint;
 final _adminUsername = 'admin';
 final _adminPassword = 'admin';
@@ -45,10 +55,7 @@ Future<bool> registerApi(User userRegisterModel) async {
   );
   if (response.statusCode == 200) {
     success = Future.value(true);
-  } else {
-    // print(json.decode(response.body).toString());
-    // throw Exception(json.decode(response.body));
-  }
+  } else {}
 
   return success;
 }
@@ -69,6 +76,11 @@ Future<int> loginApi(UserLogin userLogin) async {
     Token token = Token.fromJson(json.decode(response.body));
     Map<String, dynamic> userCreds = token.fetchUser(token.token);
 
+    StorageService().writeSecureData(StorageItem("token", token.token));
+    print("RRRRRRRRRRRR: ${token.refreshToken}");
+    StorageService()
+        .writeSecureData(StorageItem("refreshToken", token.refreshToken));
+
     UserDao userDao = UserDao();
     userDao.addTokenToDb(token.token, token.refreshToken);
     // print("INNNNNNNNNNNNN: ${userDao.getUserToken()}");
@@ -82,72 +94,98 @@ Future<int> loginApi(UserLogin userLogin) async {
   }
 }
 
-// Future<String> getAdminToken() async {
-//   final UserLogin admin =
-//       UserLogin(username: _adminUsername, password: _adminPassword);
-//   final Token token = await getToken(admin);
-//   return token.token.toString();
-// }
-
-// Future<UserLogin> registerUser(UserSignup userSignup) async {
-//   final String adminToken = await getAdminToken();
-//   final http.Response response = await http.post(
-//     _signUpUrl,
+// Future<List<Category>> getCategories(Token token) async {
+//   List<Category> categories = [];
+//   final http.Response response = await http.get(
+//     Uri.parse(_categoryURL),
 //     headers: <String, String>{
 //       'Content-Type': 'application/json; charset=UTF-8',
-//       'Authorization': 'TOKEN $adminToken'
+//       'Accept': 'application/json',
+//       // 'HttpHeaders.authorizationHeader': 'token',
+//       'Authorization': 'Bearer ${token.token}',
 //     },
-//     body: jsonEncode(userSignup.toDatabaseJson()),
 //   );
-//   if (response.statusCode == 201) {
-//     final UserLogin user = UserLogin(
-//         username: userSignup.user.username, password: userSignup.user.password);
-//     return user;
-//   } else {
-//     print(json.decode(response.body).toString());
-//     throw Exception(json.decode(response.body));
-//   }
+//   // print("Token: $token");
+//   // print(
+//   //     "RESDPONSEEEEEEEEEEEEEEEEEEEEEEEEL   ${utf8.decode(response.bodyBytes)}");
 // }
 
-// Future<String> createSession() async {
-//   print("Inside createSession function()");
-//   final String adminToken = await getAdminToken();
-//   String sessionID = "";
-//   final http.Response resp =
-//       await http.post(_createSessionURL, headers: <String, String>{
-//     'Content-Type': 'application/json; charset=UTF-8',
-//     'Authorization': 'TOKEN $adminToken'
-//   });
-//   if (resp.statusCode == 200) {
-//     sessionID = (json.decode(resp.body))['session_id'];
-//     print("Session ID : " + sessionID);
-//     return sessionID;
-//   } else {
-//     print(json.decode(resp.body).toString());
-//     throw Exception(json.decode(resp.body));
-//   }
-// }
+Future<Token> refreshToken(Token token) async {
+  final http.Response response = await http.post(
+    Uri.parse(_refreshTokenURL),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Accept': 'application/json',
+    },
+    body: jsonEncode({'refresh': token.refreshToken}),
+  );
 
-// Future<List<GraphParams>> getGraphParams(String state) async {
-//   print("Inside getNumberForState");
-//   final UserDao daoObject = UserDao();
-//   List<GraphParams> graphParams = [];
-//   final String userToken = await daoObject.getUserToken(0);
-//   final http.Response response = await http.post(_graphParamURL,
-//       headers: <String, String>{
-//         'Content-Type': 'application/json; charset=UTF-8',
-//         'Authorization': 'TOKEN $userToken'
-//       },
-//       body: json.encode({"state": state}));
-//   if (response.statusCode == 200) {
-//     final decoded = json.decode(response.body) as Map;
-//     for (final name in decoded.keys) {
-//       final value = decoded[name];
-//       GraphParams gp = GraphParams(date: name, deaths: value);
-//       graphParams.add(gp);
-//     }
-//     return graphParams;
-//   } else {
-//     throw Exception("GraphParam Error");
-//   }
-// }
+  if (response.statusCode == 200) {
+    var tokenJson = json.decode(response.body);
+    token.token = tokenJson['access'];
+    StorageService().writeSecureData(StorageItem("token", token.token));
+  } else {
+    throw Exception(json.decode(response.body));
+  }
+
+  return token;
+}
+
+Future<List<Category>> getCategories(Token token) async {
+  final http.Response response = await http.get(
+    Uri.parse(_categoryURL),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${token.token}',
+    },
+  );
+
+  // if (response.statusCode != 200) {
+  //   throw Exception('Failed to get categories');
+  // }
+  List<Category> categories = [];
+  if (response.statusCode == 200) {
+    print(
+        "RESDPONSEEEEEEEEEEEEEEEEEEEEEEEEL   ${utf8.decode(response.bodyBytes)}");
+    List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
+
+    List<Category> categories =
+        data.map((item) => Category.fromJson(item)).toList();
+    categories.forEach((category) {
+      print("Category ID: ${category.id}");
+      print("Category Name: ${category.name}");
+    });
+  } else if (response.statusCode == 401) {
+    var newToken = await refreshToken(token);
+    getTypeOfServices(newToken);
+  }
+  return categories;
+}
+
+Future<List<TypeOfService>> getTypeOfServices(Token token) async {
+  final http.Response response = await http.get(
+    Uri.parse(_typeofserviceURL),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${token.token}',
+    },
+  );
+
+  List<TypeOfService> typeofservices = [];
+
+  if (response.statusCode == 200) {
+    print("RRRRRRRRRRRRRRRRRRRRRRRR   ${utf8.decode(response.bodyBytes)}");
+    List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
+
+    typeofservices = data.map((item) => TypeOfService.fromJson(item)).toList();
+
+    print(typeofservices);
+  } else if (response.statusCode == 401) {
+    var newToken = await refreshToken(token);
+    getTypeOfServices(newToken);
+  }
+
+  return typeofservices;
+}
