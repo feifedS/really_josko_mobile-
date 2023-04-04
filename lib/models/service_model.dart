@@ -16,7 +16,7 @@ class TypeOfService {
 
   TypeOfService();
   factory TypeOfService.fromJson(Map<String, dynamic> json) {
-    print("VVVVVVVVVVVVVVVVVVVVVVVVVV ${json}");
+    // print("VVVVVVVVVVVVVVVVVVVVVVVVVV ${json}");
     Category category = Category.fromJson(json['category']);
 
     List<Tag> tags = [];
@@ -24,7 +24,7 @@ class TypeOfService {
     List<dynamic> tagsJson = json['tags'];
 
     tagsJson.forEach((element) {
-      print('RRRRRRRRRRRRRRRRRRRRRRR $element');
+      // print('RRRRRRRRRRRRRRRRRRRRRRR $element');
       Tag tag = Tag.fromJson(element);
       tags.add(tag);
     });

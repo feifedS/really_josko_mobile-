@@ -11,7 +11,7 @@ import 'package:last/models/user_model.dart';
 import 'package:last/services/storage_service.dart';
 
 // final _base = "http://192.168.0.8:8000";
-final _base = "http://192.168.51.88:8000";
+final _base = "http://192.168.221.88:8000";
 final _signInURL = "/main/token/";
 final _refreshURL = "/main/token/refresh/";
 final _signUpEndpoint = "/main/api/registration";
@@ -195,11 +195,11 @@ Future<List<Category>> getCategories(Token token) async {
 
   List<Category> categories = [];
   if (response.statusCode == 200) {
-    print("RESPONSE: ${utf8.decode(response.bodyBytes)}");
+    // print("RESPONSE: ${utf8.decode(response.bodyBytes)}");
     List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
 
     categories = data.map((item) => Category.fromJson(item)).toList();
-    print("FFFFFFFFFFAAAAAAAAAAA:       ${categories}");
+    // print("FFFFFFFFFFAAAAAAAAAAA:       ${categories}");
   } else if (response.statusCode == 401) {
     var newToken = await refreshToken(token);
     categories = await getCategories(newToken);
@@ -222,7 +222,7 @@ Future<List<TypeOfService>> getTypeOfServices(Token token) async {
   List<TypeOfService> typeofservices = [];
 
   if (response.statusCode == 200) {
-    print("RRRRRRRRRRRRRRRRRRRRRRRR   ${utf8.decode(response.bodyBytes)}");
+    // print("RRRRRRRRRRRRRRRRRRRRRRRR   ${utf8.decode(response.bodyBytes)}");
     List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
 
     typeofservices = data.map((item) => TypeOfService.fromJson(item)).toList();
