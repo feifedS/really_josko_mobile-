@@ -22,13 +22,14 @@ class ServicePage extends StatefulWidget {
   @override
   _ServiceState createState() => _ServiceState();
 
-  final RequestController _requestController = RequestController();
+  RequestController _requestController = RequestController();
 }
 
 class _ServiceState extends State<ServicePage> {
   final StorageService _storageService = StorageService();
   String selectedDate = "";
-
+  TextEditingController typeofserviceController = TextEditingController();
+  TextEditingController timespickController = TextEditingController();
   String? dropdownvalue;
   String? typeofservicesvalue;
   List<String> itemsCategories = [];
@@ -36,6 +37,8 @@ class _ServiceState extends State<ServicePage> {
   late List<Category> categories = [];
   List<TypeOfService> typeofservices = [];
 
+  String selected = '';
+  // String selectedDate = '';
   @override
   void initState() {
     super.initState();
@@ -58,22 +61,22 @@ class _ServiceState extends State<ServicePage> {
       typeofservices = result
           .where((service) => service.category.name == dropdownvalue)
           .toList();
-      // typeofservicesvalue =
-      //     typeofservices.isNotEmpty ? typeofservices.first.name : null;
+      typeofservicesvalue =
+          itemsTypeOfServices.isNotEmpty ? itemsTypeOfServices.first : null;
     });
   }
 
-  void updateTypeOfServices() async {
-    List<TypeOfService> result =
-        await widget._requestController.getTypeOfService(dropdownvalue ?? '');
-    setState(() {
-      typeofservices = result
-          .where((service) => service.category.name == dropdownvalue)
-          .toList();
-      typeofservicesvalue =
-          typeofservices.isNotEmpty ? typeofservices.first.name : null;
-    });
-  }
+  // void updateTypeOfServices() async {
+  //   List<TypeOfService> result =
+  //       await widget._requestController.getTypeOfService(dropdownvalue ?? '');
+  //   setState(() {
+  //     typeofservices = result
+  //         .where((service) => service.category.name == dropdownvalue)
+  //         .toList();
+  //     typeofservicesvalue =
+  //         typeofservices.isNotEmpty ? typeofservices.first.name : null;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -102,13 +105,13 @@ class _ServiceState extends State<ServicePage> {
                     color: Colors.blue,
                   ),
                   iconSize: 24,
-                  hint: Text("Choose material"),
+                  hint: Text("Выберите категорию"),
                   items: [
                     const DropdownMenuItem<String>(
                       value: "",
                       enabled: false,
                       child: Text(
-                        "Select Material",
+                        "Выберите категорию",
                         style: TextStyle(
                           fontSize: 15,
                           color: Colors.grey,
@@ -128,13 +131,12 @@ class _ServiceState extends State<ServicePage> {
                   onChanged: (String? newValue) {
                     setState(() {
                       dropdownvalue = newValue ?? "";
-                      updateTypeOfServices();
+                      loadTypeOfServices();
                     });
                   },
                 ),
               ),
             ),
-
             Container(
               child: Padding(
                 padding: EdgeInsets.all(10),
@@ -146,23 +148,45 @@ class _ServiceState extends State<ServicePage> {
                     fontSize: 15,
                     color: Colors.black,
                   ),
-                  icon: Icon(Icons.arrow_drop_down),
+                  icon: Icon(
+                    Icons.arrow_drop_down,
+                    // color: Colors.blue,
+                  ),
                   underline: Container(
                     height: 2,
                     color: Colors.blue,
                   ),
                   iconSize: 24,
-                  hint: Text("Выберите тип"),
-                  items: typeofservices.map((layerMaterial) {
-                    return DropdownMenuItem<String>(
-                      value: layerMaterial.name,
-                      child: Text(
-                        layerMaterial.name,
-                        style: TextStyle(fontSize: 15),
-                      ),
-                    );
-                  }).toList(),
+                  hint: Text("Услуга"),
+                  items: [
+                    ...itemsTypeOfServices
+                        .map(
+                          (item) => DropdownMenuItem(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: const TextStyle(
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                    ...typeofservices.map((layerMaterial) {
+                      return DropdownMenuItem<String>(
+                        value: layerMaterial.name,
+                        child: Text(
+                          layerMaterial.name,
+                          style: TextStyle(fontSize: 15),
+                        ),
+                      );
+                    }).toList(),
+                  ],
                   onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      selected = newValue;
+                    }
+                    print("PPPPPPPPPPPPPPPPPP$selected");
                     setState(() {
                       typeofservicesvalue = newValue ?? "";
                     });
@@ -304,14 +328,21 @@ class _ServiceState extends State<ServicePage> {
               margin: const EdgeInsets.only(top: 15.0),
               child: TextButton(
                 onPressed: () {
-                  DatePicker.showDatePicker(context,
+                  DatePicker.showDateTimePicker(context,
                       showTitleActions: true,
                       minTime: DateTime.now(),
-                      maxTime: DateTime(2025, 12, 31), onChanged: (date) {
-                    print('change $date');
-                  }, onConfirm: (date) {
+                      maxTime: DateTime(2025, 12, 31),
+                      onChanged: (date) async {},
+                      //   onChanged: (date) {
+                      //   print('change $date');
+                      // },
+                      onConfirm: (date) {
                     print('confirm $date');
-                  }, currentTime: DateTime.now(), locale: LocaleType.kk);
+
+                    selectedDate =
+                        "${date.day}.${date.month}.${date.year} ${date.hour}:${date.minute}:${date.second}";
+                    print("ooooooooooooooooo$selectedDate");
+                  }, currentTime: DateTime.now(), locale: LocaleType.kh);
                 },
                 child: Text(
                   'show date time picker (Chinese)',
@@ -326,14 +357,24 @@ class _ServiceState extends State<ServicePage> {
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: TextButton(
                 onPressed: () async {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => HomePage(
-                        userID: '',
-                      ),
-                    ),
+                  String type_of_service = selectedDate;
+                  String times_pick = selected;
+                  bool success =
+                      await widget._requestController.orderController(
+                    '',
+                    type_of_service,
+                    times_pick,
                   );
+                  if (success == true) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => HomePage(
+                          userID: '',
+                        ),
+                      ),
+                    );
+                  } else {}
                 },
                 child: Text(
                   'Вход',

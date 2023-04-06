@@ -23,7 +23,7 @@
               />
               <!-- <meta-data
               android:name="io.flutter.embedding.android.SplashScreenDrawable"
-              android:resource="@drawable/launch_image"
+              android:resource="@mipmap/ic_launcher"
               /> -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

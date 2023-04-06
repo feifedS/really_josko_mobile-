@@ -10,4 +10,10 @@ abstract class IRequestRepository {
   Future<List<TypeOfService>> getTypeOfService(
     Token token,
   );
+
+  Future<bool> order(
+    Token Token,
+    String type_of_service,
+    String times_pick,
+  );
 }

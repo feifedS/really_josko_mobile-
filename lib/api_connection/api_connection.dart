@@ -10,12 +10,15 @@ import 'package:last/models/storage_item.dart';
 import 'package:last/models/user_model.dart';
 import 'package:last/services/storage_service.dart';
 
+import '../models/order_model.dart';
+
 // final _base = "http://192.168.0.8:8000";
-final _base = "http://192.168.221.88:8000";
+final _base = "http://192.168.233.88:8000";
 final _signInURL = "/main/token/";
 final _refreshURL = "/main/token/refresh/";
 final _signUpEndpoint = "/main/api/registration";
 const _categoryEndpoint = "/main/api/category";
+final _orderEndpoint = "/main/api/order";
 final _typeofserviceEndpoint = "/main/api/typeofservices";
 // final _graphParamEndpoint = "/api/get_states/";
 final _tokenURL = _base + _signInURL;
@@ -24,6 +27,7 @@ final _signUpURL = _base + _signUpEndpoint;
 // final _createSessionURL = _base + _sessionEndpoint;
 final _categoryURL = _base + _categoryEndpoint;
 final _typeofserviceURL = _base + _typeofserviceEndpoint;
+final _orderURL = _base + _orderEndpoint;
 // final _graphParamURL = _base + _graphParamEndpoint;
 final _adminUsername = 'admin';
 final _adminPassword = 'admin';
@@ -52,6 +56,22 @@ Future<bool> registerApi(User userRegisterModel) async {
       'Content-Type': 'application/json; charset=UTF-8',
     },
     body: jsonEncode(userRegisterModel.toRegisterJson()),
+  );
+  if (response.statusCode == 200) {
+    success = Future.value(true);
+  } else {}
+
+  return success;
+}
+
+Future<bool> orderApi(Order orderSendModel) async {
+  Future<bool> success = Future.value(false);
+  final http.Response response = await http.post(
+    Uri.parse(_orderURL),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(orderSendModel.toOrderJson()),
   );
   if (response.statusCode == 200) {
     success = Future.value(true);
