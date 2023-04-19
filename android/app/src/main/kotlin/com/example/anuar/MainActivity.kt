@@ -1,4 +1,4 @@
-package com.example.last
+package com.example.anuar
 
 import io.flutter.embedding.android.FlutterActivity
 

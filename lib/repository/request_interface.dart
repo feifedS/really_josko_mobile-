@@ -4,6 +4,8 @@ import 'package:last/models/api_models.dart';
 import 'package:last/models/category_model.dart';
 import 'package:last/models/service_model.dart';
 
+import '../models/barber_model.dart';
+
 abstract class IRequestRepository {
   Future<List<Category>> getCategory(Token token);
 
@@ -11,9 +13,15 @@ abstract class IRequestRepository {
     Token token,
   );
 
-  Future<bool> order(
+  Future<bool> booking(
     Token Token,
     String type_of_service,
-    String times_pick,
+    String barber,
+    String date,
+    String time,
+  );
+
+  Future<List<Barber>> getBarber(
+    Token token,
   );
 }

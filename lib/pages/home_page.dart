@@ -1,20 +1,11 @@
 import 'dart:ffi';
-
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:last/controllers/request_controller.dart';
 import 'package:last/pages/profile_page.dart';
 import 'package:last/pages/service_page.dart';
 import 'package:last/services/storage_service.dart';
-// import 'package:flutter_session/flutter_session.dart';
 import 'login_page.dart';
 import 'register_page.dart';
-
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
-
-// import 'package:covid_communiquer/repository/chat_repository.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({required String userID});
@@ -51,7 +42,7 @@ class _HomePageState extends State<HomePage> {
     ),
     ProfilePage()
   ];
-  @override
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
